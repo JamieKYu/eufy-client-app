@@ -9,6 +9,8 @@ const ws = new WebSocket('ws://' + eufyServer + ':' + eufyPort);
 const textbeltServer = process.env.TEXTBELT_SERVER;
 const textbeltPort = process.env.TEXTBELT_PORT;
 const textbeltRecipient = process.env.TEXTBELT_RECIPIENT;
+const speakServer = process.env.SPEAK_SERVER;
+const speakPort = process.env.SPEAK_PORT;
 
 ws.onopen = (event: any) => {
     log(`Open event received`);
@@ -65,6 +67,7 @@ function handleDeviceEvent(event: any): void {
     log('Device Event: ' + event.event);
     if (event.name == 'personDetected' && event.value == true)
     {
+        speak("There is someone at the door");
         sendText(event.name);
     }
 }
@@ -88,6 +91,22 @@ async function sendText(msg: string) {
         method: 'POST',
         headers: headers,
         body: urlencoded
+    };
+
+    fetch(requestUrl, requestOptions)
+    .then(response => response.text())
+    .then(result => log(result))
+    .catch(error => log('ERROR: ' + error));
+  }
+
+
+  async function speak(msg: string) {
+    var requestUrl = 'http://' + speakServer + ':' + speakPort + '/speak';
+    var body = JSON.stringify({ 'text' : msg });
+
+    var requestOptions = {
+        method: 'POST',
+        body: body
     };
 
     fetch(requestUrl, requestOptions)
