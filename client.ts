@@ -102,10 +102,14 @@ async function sendText(msg: string) {
 
   async function speak(msg: string) {
     var requestUrl = 'http://' + speakServer + ':' + speakPort + '/speak';
-    var body = JSON.stringify({ 'text' : msg });
+    var headers = new Headers();
+    headers.append("Accept", "application/json");
+    headers.append("Content-Type", "application/json");
+    var body = JSON.stringify({ text : msg });
 
     var requestOptions = {
         method: 'POST',
+        headers: headers,
         body: body
     };
 
